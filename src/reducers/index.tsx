@@ -42,9 +42,6 @@ export const useTodoList: any = create<State & Actions>()(
                         name: state.name.map((item: IToDo, index: number) => item.id === id ? item = responsive.data : item)
                     }))
                 }
-                // editTodo: (todo: string, todoIndex: number) => set((state) => ({
-                //     name: state.name.map((item, index) => index === todoIndex ? todo : item)
-                // })),
             }),
             { name: 'todoStore' },
         ),
