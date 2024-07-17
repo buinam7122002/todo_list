@@ -1,5 +1,5 @@
 import { all, call, takeEvery } from 'redux-saga/effects';
-import { addTodo, deleteTodo, editTodo } from '../reducers';
+import { addTodo, deleteTodo, editTodo, getTodo } from '../reducers';
 
 function* addTodoListSaga(action: { type: string, payload: string }) {
     yield call(addTodo, action.payload);
@@ -7,10 +7,12 @@ function* addTodoListSaga(action: { type: string, payload: string }) {
 function* deleteTodoListSage(action: { type: string, payload: string }) {
     yield call(deleteTodo, action.payload);
 }
-function* editTodoListSaga(action: { type: string, payload: { todo: string, todoIndex: number } }) {
-    yield call(editTodo, action.payload.todo, action.payload.todoIndex)
+function* editTodoListSaga(action: { type: string, payload: { update: string, id: string } }) {
+    yield call(editTodo, action.payload.update, action.payload.id)
 }
-
+function* getTodoListSaga(action: { type: string, payload: string }) {
+    yield call(getTodo, action.payload);
+}
 function* addTodoList() {
     yield takeEvery('ADD_TODO', addTodoListSaga);
 }
@@ -20,10 +22,14 @@ function* deleteTodoList() {
 function* editTodoList() {
     yield takeEvery('EDIT_TODO', editTodoListSaga);
 }
+function* getTodoList() {
+    yield takeEvery('GET_TODO', getTodoListSaga);
+}
 export default function* rootSaga() {
     yield all([
         call(addTodoList),
         call(deleteTodoList),
-        call(editTodoList)
+        call(editTodoList),
+        call(getTodoList)
     ]);
 }
