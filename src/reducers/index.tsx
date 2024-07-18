@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import axios from "axios"
 export interface IToDo {
     id: string,
     todo: string
@@ -9,10 +8,10 @@ export type State = {
     name: IToDo[]
 }
 type Actions = {
-    getTodo: (url: string) => Promise<void>
-    addTodo: (todo: string) => Promise<void>
-    deleteTodo: (id: string) => Promise<void>
-    editTodo: (update: string, id: string) => Promise<void>
+    getTodo: (todos: IToDo[]) => void
+    addTodo: (todo: IToDo) => void
+    deleteTodo: (id: string) => void
+    editTodo: (todo: IToDo) => void
 }
 
 export const useTodoList: any = create<State & Actions>()(
@@ -20,28 +19,14 @@ export const useTodoList: any = create<State & Actions>()(
         persist(
             (set) => ({
                 name: [],
-                getTodo: async (url: string) => {
-                    const responsive = await axios.get(url)
-                    set({ name: responsive.data })
+                getTodo: (todos: IToDo[]) => {
+                    set({ name: todos })
                 },
-                addTodo: async (todo: string) => {
-                    const responsive = await axios.post("https://6697641b02f3150fb66d6dcf.mockapi.io/api/todo_list/todo_list", {
-                        todo: todo
-                    })
-                    set((state) => ({ name: [...state.name, responsive.data] }))
+                addTodo: (todo: IToDo) => {
+                    set((state) => ({ name: [...state.name, todo] }))
                 },
-                deleteTodo: async (id: string) => {
-                    const responsive = await axios.delete(`https://6697641b02f3150fb66d6dcf.mockapi.io/api/todo_list/todo_list/${id}`)
-                    set((state) => ({ name: state.name.filter((todo: IToDo, index: number) => responsive.data.id !== todo.id) }))
-                },
-                editTodo: async (update: string, id: string) => {
-                    const responsive = await axios.put(`https://6697641b02f3150fb66d6dcf.mockapi.io/api/todo_list/todo_list/${id}`, {
-                        todo: update
-                    })
-                    set((state) => ({
-                        name: state.name.map((item: IToDo, index: number) => item.id === id ? item = responsive.data : item)
-                    }))
-                }
+                deleteTodo: (id: string) => set((state) => ({ name: state.name.filter((todo: IToDo, index: number) => id !== todo.id) })),
+                editTodo: (todo: IToDo) => set((state) => ({ name: state.name.map((item: IToDo) => item.id === todo.id ? item = todo : item) }))
             }),
             { name: 'todoStore' },
         ),

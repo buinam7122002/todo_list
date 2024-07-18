@@ -1,30 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { MdModeEdit } from "react-icons/md";
-import { IToDo, State, useTodoList } from './reducers';
+import { getTodo, IToDo } from './reducers';
+import { useCreateTodoList, useDeleteTodoList, useEditTodoList, useGetTodoList } from './hook';
 function App() {
-  const data: string[] = useTodoList((state: State) => state.name)
-  const dispatch = useDispatch()
+  const { data, error, isError, isLoading } = useGetTodoList()
+  const addTodoList = useCreateTodoList()
+  const deleteTodoList = useDeleteTodoList()
+  const editToDoList = useEditTodoList()
   const [input, setInput] = useState("")
   const [edit, setEdit] = useState<boolean>(false)
-  const [indexEdit, setIndexEdit] = useState<string>()
+  const [indexEdit, setIndexEdit] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null)
   const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
     setInput(e.currentTarget.value)
   }
   const handleAddTodo = () => {
-    dispatch({
-      type: "ADD_TODO",
-      payload: input
-    })
+    addTodoList.mutate(input)
     inputRef.current?.focus()
     setInput("")
   }
   const handleDeleteTodo = (id: string) => {
-    dispatch({
-      type: "DELETE_TODO",
-      payload: id
-    })
+    deleteTodoList.mutate(id)
   }
   const handleEditTodo = (todo: IToDo) => {
     inputRef.current?.focus()
@@ -32,23 +28,24 @@ function App() {
     setIndexEdit(todo.id)
     setEdit(true)
   }
-  useEffect(() => {
-    dispatch({
-      type: "GET_TODO",
-      payload: "https://6697641b02f3150fb66d6dcf.mockapi.io/api/todo_list/todo_list"
-    })
-  }, [data])
   const handleUpdate = () => {
-    dispatch({
-      type: "EDIT_TODO",
-      payload: {
-        update: input,
-        id: indexEdit
-      }
+    editToDoList.mutate({
+      todo: input,
+      id: indexEdit
     })
     setInput("")
     inputRef.current?.focus()
     setEdit(false)
+  }
+  useEffect(() => {
+    getTodo(data)
+  }, [data])
+  if (isLoading) {
+    return <div>Đang tải...</div>;
+  }
+
+  if (isError) {
+    return <div>Đã xảy ra lỗi: {error?.message}</div>;
   }
   return (
     <>

@@ -4,6 +4,7 @@ import { addTodo, deleteTodo, editTodo, getTodo } from '../reducers';
 function* addTodoListSaga(action: { type: string, payload: string }) {
     yield call(addTodo, action.payload);
 }
+
 function* deleteTodoListSage(action: { type: string, payload: string }) {
     yield call(deleteTodo, action.payload);
 }
