@@ -5,12 +5,14 @@ const useGetTodoList = () => {
     return useQuery({
         queryKey: ["todo"],
         queryFn: () => getTodoList(),
+        staleTime: 180000,
     })
 }
+
 const useCreateTodoList = () => {
     const queryClient = useQueryClient();
     const mutation = useMutation({
-        mutationFn: (todo: string) => createTodoList(todo),
+        mutationFn: (todo: IToDo) => createTodoList(todo),
         onSuccess: (data) => {
             addTodo(data)
             queryClient.invalidateQueries({ queryKey: ["todo"] });
@@ -32,7 +34,7 @@ const useDeleteTodoList = () => {
 const useEditTodoList = () => {
     const queryClient = useQueryClient()
     const mutation = useMutation({
-        mutationFn: (todo: IToDo) => eidtTodoList(todo.todo, todo.id),
+        mutationFn: (todo: IToDo) => eidtTodoList(todo),
         onSuccess: (data) => {
             editTodo(data)
             queryClient.invalidateQueries({ queryKey: ["todo"] })
