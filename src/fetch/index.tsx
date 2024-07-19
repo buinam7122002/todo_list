@@ -34,7 +34,7 @@ const getTodoList = async () => {
         const data = result.map((todo: IToDo) => {
             const isExpired = todo.expiredDate && new Date(todo.expiredDate).getTime() < nowDate.getTime();
             const newType = isExpired ? "expired" : todo.status;
-            return { ...todo, type: newType };
+            return { ...todo, status: newType };
         })
         getTodo(data)
         return data
